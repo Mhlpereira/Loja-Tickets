@@ -1,0 +1,54 @@
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "mario@mario.com",
+  "password": "secret"
+}
+
+
+###
+POST http://localhost:3000/partners
+Content-Type: application/json
+
+{
+  "name": "mario",
+  "email": "mario@mario.com",
+  "password": "secret",
+  "company_name" : "company"
+}
+
+###
+POST http://localhost:3000/customer
+Content-Type: application/json
+
+{
+  "name": "mario",
+  "email": "mario@mario.com",
+  "password": "secret",
+  "address" : "adress   ",
+  "phone" : "123456789"
+}
+
+###
+POST http://localhost:3000/partners/events
+Content-Type: application/json
+
+{
+  "name": "mario",
+  "description": "descrição do evento",
+  "date": "2021-09-09",
+  "location" : "Localização do evento"
+}
+
+###
+GET http://localhost:3000/partnes/events
+
+###
+GET http://localhost:3000/partnes/events/1
+
+###
+GET http://localhost:3000/events
+
+###
+GET http://localhost:3000/events/1

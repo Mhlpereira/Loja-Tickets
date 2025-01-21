@@ -1,5 +1,5 @@
 ###
-# @name Partner
+# @name loginPartner
 POST http://localhost:3000/auth/login
 Content-Type: application/json
 
@@ -13,12 +13,12 @@ Content-Type: application/json
 
 
 ###
-# @name Customer
+# @name loginCustomer
 POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-  "email": "mario@mario.com",
+  "email": "marioCustomer@mario.com",
   "password": "secret"
 }
 
@@ -51,7 +51,7 @@ Content-Type: application/json
 ###
 POST http://localhost:3000/partners/events
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJtYXJpb0BtYXJpby5jb20iLCJpYXQiOjE3Mzc0Nzc4MTAsImV4cCI6MTczNzQ4MTQxMH0.a0C5QY7QVrSHoOqEfWRWhGzUFdwcXS91ySv4bEkZAho
+Authorization: Bearer {{ tokenPartner }}
 
 {
   "name": "mario",

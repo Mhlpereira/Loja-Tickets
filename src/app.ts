@@ -28,6 +28,10 @@ app.use(async (req, res, next) => {
         (route) => route.method === req.method && req.path.startsWith(route.path)
     );
 
+    if(isUnprotected){
+        return next();
+    }
+
     const token = req.headers['authorization']?.split(' ')[1];
     if (!token) {
         res.status(401).json({ message: 'No tokeno provider' });
@@ -145,16 +149,16 @@ app.post('/partners/events', async (req, res) => {
         const createAt = new Date();
 
         const [eventResult] = await connection.execute<mysql.ResultSetHeader>(
-            "INSERT INTO events (name, description, date, location, create_at, partner_id) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO events (name, description, date, location, created_at, partner_id) VALUES (?, ?, ?, ?, ?, ?)",
             [name, description, eventDate, location, createAt, partner.id]
         );
         res.status(201).json({
             id: eventResult.insertId,
             name,
             description,
-            eventDate,
+            date: eventDate,
             location,
-            create_at: createAt,
+            created_at: createAt,
             partner_id: partner.id
         });
     } finally {

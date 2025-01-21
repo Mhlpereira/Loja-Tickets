@@ -17,15 +17,15 @@ const app = express();
 app.use(express.json());
 
 const unprotectedRoutes = [
-   { method: 'POST', path: '/auth/login' },
-   { method: 'POST', path: '/customer/register' },
-   { method: 'POST', path: '/partners/register'},
-   { method: 'GET', path: '/events' }
+    { method: 'POST', path: '/auth/login' },
+    { method: 'POST', path: '/customer/register' },
+    { method: 'POST', path: '/partners/register' },
+    { method: 'GET', path: '/events' }
 ];
 
 app.use(async (req, res, next) => {
-    const isUnprotected =  unprotectedRoutes.some(
-        (route) => route.method === req.method && req.path.startsWith(route.path) 
+    const isUnprotected = unprotectedRoutes.some(
+        (route) => route.method === req.method && req.path.startsWith(route.path)
     );
 
     const token = req.headers['authorization']?.split(' ')[1];
@@ -44,7 +44,7 @@ app.use(async (req, res, next) => {
             ('SELECT * FROM user WHERE id = ?', [payload.id]);
 
         const user = rows.length ? rows[0] : null;
-        if(!user){
+        if (!user) {
             res.status(401).json({ message: 'Failed to authenticate token' });
             return;
         }
@@ -124,83 +124,134 @@ app.post('/customer/register', async (req, res) => {
     }
 })
 
-app.post('/partners/events',async (req, res) => {
+app.post('/partners/events', async (req, res) => {
     const { name, description, date, location } = req.body;
 
     const userId = req.user!.id; // ! usado para indicar que o valor não é nulo
     const connection = await createConnection();
-    try{
-    const [rows] = await connection.execute<mysql.RowDataPacket[]>(
-        "SELECT * FROM partner WHERE user_id = ?",
-        [userId]
-    );
-    const partner = rows.length ? rows[0] : null;
+    try {
+        const [rows] = await connection.execute<mysql.RowDataPacket[]>(
+            "SELECT * FROM partner WHERE user_id = ?",
+            [userId]
+        );
+        const partner = rows.length ? rows[0] : null;
 
-    if(!partner){
-        res.status(403).json({ message : 'Not Authorized!'})
-        return;
-    }
+        if (!partner) {
+            res.status(403).json({ message: 'Not Authorized!' })
+            return;
+        }
 
-    const eventDate = new Date(date);
-    const createAt = new Date();
+        const eventDate = new Date(date);
+        const createAt = new Date();
 
-    const [eventResult] = await connection.execute<mysql.ResultSetHeader>(
-        "INSERT INTO events (name, description, date, location, create_at, partner_id) VALUES (?, ?, ?, ?, ?, ?)",
-        [name, description, eventDate, location, createAt, partner.id]
-    );
-    res.status(201).json({
-        id: eventResult.insertId, 
-        name, 
-        description, 
-        eventDate,
-        location,
-        create_at : createAt,
-        partner_id: partner.id
+        const [eventResult] = await connection.execute<mysql.ResultSetHeader>(
+            "INSERT INTO events (name, description, date, location, create_at, partner_id) VALUES (?, ?, ?, ?, ?, ?)",
+            [name, description, eventDate, location, createAt, partner.id]
+        );
+        res.status(201).json({
+            id: eventResult.insertId,
+            name,
+            description,
+            eventDate,
+            location,
+            create_at: createAt,
+            partner_id: partner.id
         });
-} finally{
-    await connection.end();
-}
+    } finally {
+        await connection.end();
+    }
 });
 
-app.get('/partners/events',async (req, res) => {
+app.get('/partners/events', async (req, res) => {
     const userId = req.user!.id; // ! usado para indicar que o valor não é nulo
     const connection = await createConnection();
-    try{
-    const [rows] = await connection.execute<mysql.RowDataPacket[]>(
-        "SELECT * FROM partner WHERE user_id = ?",
-        [userId]
-    );
-    const partner = rows.length ? rows[0] : null;
+    try {
+        const [rows] = await connection.execute<mysql.RowDataPacket[]>(
+            "SELECT * FROM partner WHERE user_id = ?",
+            [userId]
+        );
+        const partner = rows.length ? rows[0] : null;
 
-    if(!partner){
-        res.status(403).json({ message : 'Not Authorized!'})
-        return;
+        if (!partner) {
+            res.status(403).json({ message: 'Not Authorized!' })
+            return;
+        }
+
+        const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
+            "SELECT * FROM events WHERE partner_id = ?",
+            [partner.id]
+        );
+        res.status(201).json(eventRows);
+    } finally {
+        await connection.end();
     }
+});
 
-    const [eventRows] = await connection.execute<mysql.ResultSetHeader>(
-        "SELECT * FROM events WHERE partner_id = ?",
-        [partner.id]
-    );
-    res.status(201).json(eventRows);
-} finally{
-    await connection.end();
-}});
-
-app.get('/partners/events/:eventId', (req, res) => {
+app.get('/partners/events/:eventId', async (req, res) => {
     const { eventId } = req.params;
-    console.log(eventId);
-    res.send();
+    const userId = req.user!.id; // ! usado para indicar que o valor não é nulo
+    const connection = await createConnection();
+    try {
+        const [rows] = await connection.execute<mysql.RowDataPacket[]>(
+            "SELECT * FROM partner WHERE user_id = ?",
+            [userId]
+        );
+        const partner = rows.length ? rows[0] : null;
+
+        if (!partner) {
+            res.status(403).json({ message: 'Not Authorized!' })
+            return;
+        }
+
+        const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
+            "SELECT * FROM events WHERE partner_id = ? and id = ?",
+            [partner.id, eventId]
+        );
+
+        const event = eventRows.length ? eventRows[0] : null;
+        if (!event) {
+            res.status(404).json({ message: 'Event not found!' })
+            return;
+        }
+
+        res.json(event);
+    } finally {
+        await connection.end();
+    }
+});
+
+app.get('/events', async (req, res) => {
+    const connection = await createConnection();
+    try {
+        const [rows] = await connection.execute<mysql.RowDataPacket[]>(
+            'SELECT * FROM events'
+        );
+        res.json(rows);
+    } finally {
+        await connection.end();
+    }
 })
 
-app.get('/events', (req, res) => {
-})
-
-app.get('/events/:eventId', (req, res) => {
+app.get('/events/:eventId', async (req, res) => {
     const { eventId } = req.params;
-    console.log(eventId);
-    res.send();
-})
+    const connection = await createConnection();
+    try {
+        const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
+            "SELECT * FROM events WHERE id = ?",
+            [eventId]
+        );
+        const event = eventRows.length ? eventRows[0] : null;
 
+        if (!event) {
+            res.status(404).json({ message: "Event not found" });
+            return;
+        }
+
+        res.json(event);
+    } finally {
+        await connection.end();
+    }
+});
 
 app.listen(3000, async () => {
     const connection = await createConnection();
@@ -212,4 +263,3 @@ app.listen(3000, async () => {
     await connection.execute('SET FOREIGN_KEY_CHECKS=1');
     console.log('Running on port 3000');
 });
-

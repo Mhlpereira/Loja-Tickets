@@ -1,3 +1,5 @@
+###
+# @name Partner
 POST http://localhost:3000/auth/login
 Content-Type: application/json
 
@@ -6,6 +8,22 @@ Content-Type: application/json
   "password": "secret"
 }
 
+###
+@tokenPartner = {{ loginPartner.response.body.token }}
+
+
+###
+# @name Customer
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "mario@mario.com",
+  "password": "secret"
+}
+
+###
+@tokenCustomer = {{ loginCustomer.response.body.token }}
 
 ###
 POST http://localhost:3000/partners/register
@@ -23,8 +41,8 @@ POST http://localhost:3000/customer/register
 Content-Type: application/json
 
 {
-  "name": "mario",
-  "email": "mario@mario.com",
+  "name": "marioCustomer",
+  "email": "marioCustomer@mario.com",
   "password": "secret",
   "address" : "adress   ",
   "phone" : "123456789"
@@ -44,9 +62,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiO
 
 ###
 GET http://localhost:3000/partnes/events
+Authorization: Bearer {{ tokenPartner }}
 
 ###
 GET http://localhost:3000/partnes/events/1
+Authorization: Bearer {{ tokenPartner }}
 
 ###
 GET http://localhost:3000/events

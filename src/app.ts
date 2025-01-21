@@ -162,8 +162,29 @@ app.post('/partners/events',async (req, res) => {
 }
 });
 
-app.get('/partners/events', (req, res) => {
-})
+app.get('/partners/events',async (req, res) => {
+    const userId = req.user!.id; // ! usado para indicar que o valor não é nulo
+    const connection = await createConnection();
+    try{
+    const [rows] = await connection.execute<mysql.RowDataPacket[]>(
+        "SELECT * FROM partner WHERE user_id = ?",
+        [userId]
+    );
+    const partner = rows.length ? rows[0] : null;
+
+    if(!partner){
+        res.status(403).json({ message : 'Not Authorized!'})
+        return;
+    }
+
+    const [eventRows] = await connection.execute<mysql.ResultSetHeader>(
+        "SELECT * FROM events WHERE partner_id = ?",
+        [partner.id]
+    );
+    res.status(201).json(eventRows);
+} finally{
+    await connection.end();
+}});
 
 app.get('/partners/events/:eventId', (req, res) => {
     const { eventId } = req.params;

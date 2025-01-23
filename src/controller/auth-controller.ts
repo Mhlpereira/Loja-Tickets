@@ -5,9 +5,9 @@ import * as mysql from 'mysql2/promise';
 import { createConnection } from "../database";
 
 
-export const authroutes = Router();
+export const authRoutes = Router();
 
-authroutes.post('/auth/login', async (req, res) => {
+authRoutes.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const connection = await createConnection();
     try {

@@ -72,4 +72,4 @@ Authorization: Bearer {{ tokenPartner }}
 GET http://localhost:3000/events
 
 ###
-GET http://localhost:3000/events/10
+GET http://localhost:3000/events/1

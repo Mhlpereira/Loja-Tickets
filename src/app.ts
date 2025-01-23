@@ -6,6 +6,7 @@ import { authRoutes } from './controller/auth-controller';
 import { partnerRoutes } from './controller/partner-controller';
 import { customerRoutes } from './controller/customer-controller';
 import { eventRoutes } from './controller/event-controller';
+import { UserService } from './service/user-service';
 
 
 const app = express();
@@ -39,11 +40,8 @@ app.use(async (req, res, next) => {
             id: number;
             email: string;
         };
-        const connection = await createConnection();
-        const [rows] = await connection.execute<mysql.RowDataPacket[]>
-            ('SELECT * FROM user WHERE id = ?', [payload.id]);
-
-        const user = rows.length ? rows[0] : null;
+        const userService = new UserService();
+        const user = await userService.findById(payload.id);
         if (!user) {
             res.status(401).json({ message: 'Failed to authenticate token' });
             return;

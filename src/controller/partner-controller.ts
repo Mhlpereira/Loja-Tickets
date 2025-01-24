@@ -7,7 +7,7 @@ export const partnerRoutes = Router();
 partnerRoutes.post('/register', async (req, res) => {
     const { name, email, password, company_name } = req.body;
     const partnerService = new PartnerService();
-    const result = partnerService.register({
+    const result = await partnerService.register({
         name,
         email,
         password,
@@ -32,7 +32,7 @@ partnerRoutes.post('/events', async (req, res) => {
     const result = await eventService.create({
         name,
         description,
-        date,
+        date: new Date(date),
         location,
         partnerId: partner.id
     })

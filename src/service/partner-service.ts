@@ -15,7 +15,7 @@ export class PartnerService {
     }) {
         const { name, email, password, company_name } = data;
 
-        const connection = Database.getInstance();
+        const connection = await Database.getInstance().getConnection();
         try {
             await connection.beginTransaction();
             const user = await UserModel.create({
@@ -43,7 +43,6 @@ export class PartnerService {
             await connection.rollback();
             throw e;
         }
-
     }
 
     async findUserById(userId: number) {

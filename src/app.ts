@@ -1,7 +1,6 @@
 import express from 'express';
-import * as mysql from 'mysql2/promise';
 import jwt from 'jsonwebtoken';
-import { createConnection } from './database';
+import { Database } from './database';
 import { authRoutes } from './controller/auth-controller';
 import { partnerRoutes } from './controller/partner-controller';
 import { customerRoutes } from './controller/customer-controller';
@@ -66,7 +65,7 @@ app.use('/events', eventRoutes);
 
 
 app.listen(3000, async () => {
-    const connection = await createConnection();
+    const connection = Database.getInstance();
     await connection.execute('SET FOREIGN_KEY_CHECKS=0');
     await connection.execute('TRUNCATE TABLE user');
     await connection.execute('TRUNCATE TABLE partner');

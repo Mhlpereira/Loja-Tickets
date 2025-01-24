@@ -1,5 +1,5 @@
 import * as mysql from 'mysql2/promise';
-import { createConnection } from "../database";
+import { Database } from "../database";
 
 
 export class EventService {
@@ -12,57 +12,48 @@ export class EventService {
         partnerId: number;
     }) {
         const { name, description, date, location, partnerId } = data;
-        const connection = await createConnection();
-        try {
-            const eventDate = new Date(date);
-            const createAt = new Date();
+        const connection = Database.getInstance();
+        const eventDate = new Date(date);
+        const createAt = new Date();
 
-            const [eventResult] = await connection.execute<mysql.ResultSetHeader>(
-                "INSERT INTO events (name, description, date, location, created_at, partner_id) VALUES (?, ?, ?, ?, ?, ?)",
-                [name, description, eventDate, location, createAt, partnerId]
-            );
-            return ({
-                id: eventResult.insertId,
-                name,
-                description,
-                date: eventDate,
-                location,
-                created_at: createAt,
-                partner_id: partnerId
-            });
-        } finally {
-            await connection.end();
-        }
+        const [eventResult] = await connection.execute<mysql.ResultSetHeader>(
+            "INSERT INTO events (name, description, date, location, created_at, partner_id) VALUES (?, ?, ?, ?, ?, ?)",
+            [name, description, eventDate, location, createAt, partnerId]
+        );
+        return ({
+            id: eventResult.insertId,
+            name,
+            description,
+            date: eventDate,
+            location,
+            created_at: createAt,
+            partner_id: partnerId
+        });
+
     }
 
     async findAll(partnerId?: number) {
-        const connection = await createConnection();
-        try {
-            const query = partnerId ? "SELECT * FROM events WHERE partner_id = ?" :
-                "SELECT * FROM events"
+        const connection = Database.getInstance();
 
-            const params = partnerId ? [partnerId] : []
-            const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
-                query,
-                params
-            );
-            return eventRows;
-        } finally {
-            await connection.end();
-        }
+        const query = partnerId ? "SELECT * FROM events WHERE partner_id = ?" :
+            "SELECT * FROM events"
+
+        const params = partnerId ? [partnerId] : []
+        const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
+            query,
+            params
+        );
+        return eventRows;
+
     }
 
     async findById(eventId: number) {
-        const connection = await createConnection();
-        try {
-            const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
-                "SELECT * FROM events WHERE id = ?",
-                [eventId]
-            );
+        const connection = Database.getInstance();
+        const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
+            "SELECT * FROM events WHERE id = ?",
+            [eventId]
+        );
 
-            return eventRows.length ? eventRows[0] : null;
-        } finally {
-            await connection.end();
-        }
+        return eventRows.length ? eventRows[0] : null;
     }
 }

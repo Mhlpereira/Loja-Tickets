@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { createConnection } from "../database";
 import { InvalidCredentialError } from "../error/invalid-credential";
 import { UserModel } from "../model/user-model";
 

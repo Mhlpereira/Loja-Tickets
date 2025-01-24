@@ -1,6 +1,8 @@
 import * as mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
-import { createConnection } from "../database";
+import { Database } from "../database";
+import { UserModel } from '../model/user-model';
+import { PartnerModel } from '../model/partner-model';
 
 
 export class PartnerService {
@@ -13,43 +15,38 @@ export class PartnerService {
     }) {
         const { name, email, password, company_name } = data;
 
-        const connection = await createConnection();
+        const connection = Database.getInstance();
         try {
-            const createdAt = new Date();
-            const hashedPassword = bcrypt.hashSync(password, 10);
-            const [userResult] = await connection.execute<mysql.ResultSetHeader>(
-                'INSERT INTO user (name, email, password, created_at) VALUES (?, ?, ?, ?)',
-                [name, email, hashedPassword, createdAt]);
+            await connection.beginTransaction();
+            const user = await UserModel.create({
+                name,
+                email,
+                password
+            });
 
-            const userId = userResult.insertId;
-            const [partnerResult] = await connection.execute<mysql.ResultSetHeader>(
-                'INSERT INTO partner (user_id, company_name, created_at) VALUES (?, ?, ?)',
-                [userId, company_name, createdAt]
-            );
+            const partner = await PartnerModel.create({
+                company_name,
+                user_id: user.id,
+            })
+            await connection.commit();
             return {
-                id: partnerResult.insertId,
+                id: partner.id,
                 name,
                 email,
                 password,
-                user_id: userId,
+                user_id: user.id,
                 company_name,
-                created_at: createdAt
+                created_at: partner.created_at
             };
-        } finally {
-            connection.end();
         }
+        catch (e) {
+            await connection.rollback();
+            throw e;
+        }
+
     }
 
     async findUserById(userId: number) {
-        const connection = await createConnection();
-        try {
-            const [rows] = await connection.execute<mysql.RowDataPacket[]>(
-                "SELECT * FROM partners WHERE user_id = ?",
-                [userId]
-            )
-            return rows.length ? rows[0] : null;
-        }finally{
-            await connection.end();
-        }
+        return PartnerModel.findById(userId);
     }
 }

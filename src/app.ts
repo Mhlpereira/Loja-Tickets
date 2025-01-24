@@ -6,6 +6,7 @@ import { partnerRoutes } from './controller/partner-controller';
 import { customerRoutes } from './controller/customer-controller';
 import { eventRoutes } from './controller/event-controller';
 import { UserService } from './service/user-service';
+import { ticketRoutes } from './controller/tickets-controllet';
 
 
 const app = express();
@@ -62,6 +63,7 @@ app.use('/auth', authRoutes);
 app.use('/partners', partnerRoutes);
 app.use('/customer', customerRoutes);
 app.use('/events', eventRoutes);
+app.use('/events', ticketRoutes);
 
 
 app.listen(3000, async () => {

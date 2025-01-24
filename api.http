@@ -69,6 +69,16 @@ GET http://localhost:3000/partnes/events/1
 Authorization: Bearer {{ tokenPartner }}
 
 ###
+POST http://localhost:3000/events/1/tickets
+Content-Type: application/json
+Authorization:  Bearer {{ tokenPartner }}
+
+{
+    "num_tickets" : 10,
+    "price": 100
+}
+
+###
 GET http://localhost:3000/events
 
 ###

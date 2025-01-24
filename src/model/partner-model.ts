@@ -20,7 +20,7 @@ export class PartnerModel {
     const db = options?.connection ?? Database.getInstance();
     const created_at = new Date();
     const [result] = await db.execute<ResultSetHeader>(
-      "INSERT INTO partners (user_id, company_name, created_at) VALUES (?, ?, ?)",
+      "INSERT INTO partner (user_id, company_name, created_at) VALUES (?, ?, ?)",
       [data.user_id, data.company_name, created_at]
     );
     const partner = new PartnerModel({
@@ -36,7 +36,7 @@ export class PartnerModel {
     options?: { user?: boolean }
   ): Promise<PartnerModel | null> {
     const db = Database.getInstance();
-    let query = "SELECT * FROM partners WHERE id = ?";
+    let query = "SELECT * FROM partner WHERE id = ?";
     if (options?.user) {
       query =
         "SELECT p.*, users.id as user_id, users.name as user_name, users.email as user_email FROM partners p JOIN users ON p.user_id = users.id WHERE p.id = ?";
@@ -63,7 +63,7 @@ export class PartnerModel {
     options?: { user?: boolean }
   ): Promise<PartnerModel | null> {
     const db = Database.getInstance();
-    let query = "SELECT * FROM partners WHERE user_id = ?";
+    let query = "SELECT * FROM partner WHERE user_id = ?";
     if (options?.user) {
       query =
         "SELECT p.*, users.id as user_id, users.name as user_name, users.email as user_email FROM partners p JOIN users ON p.user_id = users.id WHERE p.user_id = ?";
@@ -94,7 +94,7 @@ export class PartnerModel {
   async update(): Promise<void> {
     const db = Database.getInstance();
     const [result] = await db.execute<ResultSetHeader>(
-      "UPDATE partners SET user_id = ?, company_name = ? WHERE id = ?",
+      "UPDATE partner SET user_id = ?, company_name = ? WHERE id = ?",
       [this.user_id, this.company_name, this.id]
     );
     if (result.affectedRows === 0) {
@@ -105,7 +105,7 @@ export class PartnerModel {
   async delete(): Promise<void> {
     const db = Database.getInstance();
     const [result] = await db.execute<ResultSetHeader>(
-      "DELETE FROM partners WHERE id = ?",
+      "DELETE FROM partner WHERE id = ?",
       [this.id]
     );
     if (result.affectedRows === 0) {

@@ -6,7 +6,8 @@ import { partnerRoutes } from './controller/partner-controller';
 import { customerRoutes } from './controller/customer-controller';
 import { eventRoutes } from './controller/event-controller';
 import { UserService } from './service/user-service';
-import { ticketRoutes } from './controller/tickets-controllet';
+import { ticketRoutes } from './controller/tickets-controller';
+import { purchaseRoutes } from './controller/purchase-controller';
 
 
 export const app = express();

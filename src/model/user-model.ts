@@ -25,7 +25,7 @@ export class UserModel {
     const created_at = new Date();
     const hashedPassword = UserModel.hashPassword(data.password);
     const [result] = await db.execute<ResultSetHeader>(
-      "INSERT INTO user (name, email, password, created_at) VALUES (?, ?, ?, ?)",
+      "INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, ?)",
       [data.name, data.email, hashedPassword, created_at]
     );
     const user = new UserModel({
@@ -48,7 +48,7 @@ export class UserModel {
   static async findById(id: number): Promise<UserModel | null> {
     const db = Database.getInstance();
     const [rows] = await db.execute<RowDataPacket[]>(
-      "SELECT * FROM user WHERE id = ?",
+      "SELECT * FROM users WHERE id = ?",
       [id]
     );
     return rows.length ? new UserModel(rows[0] as UserModel) : null;
@@ -57,7 +57,7 @@ export class UserModel {
   static async findByEmail(email: string): Promise<UserModel | null> {
     const db = Database.getInstance();
     const [rows] = await db.execute<RowDataPacket[]>(
-      "SELECT * FROM user WHERE email = ?",
+      "SELECT * FROM users WHERE email = ?",
       [email]
     );
     return rows.length ? new UserModel(rows[0] as UserModel) : null;
@@ -72,7 +72,7 @@ export class UserModel {
   async update(): Promise<void> {
     const db = Database.getInstance();
     const [result] = await db.execute<ResultSetHeader>(
-      "UPDATE user SET name = ?, email = ?, password = ? WHERE id = ?",
+      "UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?",
       [this.name, this.email, this.password, this.id]
     );
     if (result.affectedRows === 0) {
@@ -83,7 +83,7 @@ export class UserModel {
   async delete(): Promise<void> {
     const db = Database.getInstance();
     const [result] = await db.execute<ResultSetHeader>(
-      "DELETE FROM user WHERE id = ?",
+      "DELETE FROM users WHERE id = ?",
       [this.id]
     );
     if (result.affectedRows === 0) {

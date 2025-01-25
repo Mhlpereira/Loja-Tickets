@@ -1,12 +1,12 @@
-import { PurchaseModel, PurchaseStatus } from "../models/purchase-model";
-import { TicketModel, TicketStatus } from "../models/ticket-model";
-import { PurchaseTicketModel } from "../models/purchase-ticket-model";
+import { PurchaseModel, PurchaseStatus } from "../model/purchase-model";
+import { TicketModel, TicketStatus } from "../model/ticket-model";
+import { PurchaseTicketModel } from "../model/purchase-ticket-model";
 import { PaymentService } from "./payment-service";
-import { CustomerModel } from "../models/customer-model";
+import { CustomerModel } from "../model/customer-model";
 import {
     ReservationStatus,
     ReservationTicketModel,
-} from "../models/reservation-ticket-model";
+} from "../model/reservation-ticket-model";
 import { Database } from "../database";
 
 export class PurchaseService {

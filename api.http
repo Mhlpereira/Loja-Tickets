@@ -37,7 +37,7 @@ Content-Type: application/json
 ###
 @tokenCustomer1 = {{ loginCustomer1.response.body.token }}
 
-### Criação do partner 1
+### 
 POST http://localhost:3000/partners/register
 Content-Type: application/json
 
@@ -48,7 +48,7 @@ Content-Type: application/json
     "company_name": "Company Name 1"
 }
 
-### Criação do partner 2
+### 
 POST http://localhost:3000/partners/register
 Content-Type: application/json
 
@@ -71,7 +71,7 @@ Content-Type: application/json
     "phone": "333333333"
 }
 
-### Criação do evento pelo parceiro
+### 
 POST http://localhost:3000/partners/events
 Content-Type: application/json
 Authorization: Bearer {{ tokenPartner1 }}
@@ -83,15 +83,15 @@ Authorization: Bearer {{ tokenPartner1 }}
     "location": "Rua x, bairro etc"
 }
 
-### Listagem de eventos do parceiro
+###
 GET http://localhost:3000/partners/events
 Authorization: Bearer {{ tokenPartner1 }}
 
-### ### Listagem de um evento do parceiro
+### 
 GET http://localhost:3000/partners/events/1
 Authorization: Bearer {{ tokenPartner1 }}
 
-### Criação de tickets
+### 
 POST http://localhost:3000/events/1/tickets
 Content-Type: application/json
 Authorization: Bearer {{ tokenPartner1 }}
@@ -101,16 +101,15 @@ Authorization: Bearer {{ tokenPartner1 }}
     "price": 100
 }
 
-### (poderia trabalhar com paginação)
+### 
 GET http://localhost:3000/events/1/tickets
 
 ###
-GET http://localhost:3000/events/1/tickets/1
-
-### Listagem de eventos
+GET http://localhost:3000/events/1/tickets/13
+### 
 GET http://localhost:3000/events
 
-### Listagem de um evento
+### 
 GET http://localhost:3000/events/1
 
 ###

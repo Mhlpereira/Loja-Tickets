@@ -21,7 +21,7 @@ export class CustomerModel {
         const db = options?.connection ?? Database.getInstance();
         const created_at = new Date();
         const [result] = await db.execute<ResultSetHeader>(
-            "INSERT INTO customer (user_id, address, phone, created_at) VALUES (?, ?, ?, ?)",
+            "INSERT INTO customers (user_id, address, phone, created_at) VALUES (?, ?, ?, ?)",
             [data.user_id, data.address, data.phone, created_at]
         );
         const customer = new CustomerModel({
@@ -37,10 +37,10 @@ export class CustomerModel {
         options?: { user?: boolean }
     ): Promise<CustomerModel | null> {
         const db = Database.getInstance();
-        let query = "SELECT * FROM customer WHERE id = ?";
+        let query = "SELECT * FROM customers WHERE id = ?";
         if (options?.user) {
             query =
-                "SELECT c.*, users.id as user_id, users.name as user_name, users.email as user_email FROM customer c JOIN users ON c.user_id = users.id WHERE c.id = ?";
+                "SELECT c.*, users.id as user_id, users.name as user_name, users.email as user_email FROM customers c JOIN users ON c.user_id = users.id WHERE c.id = ?";
         }
         const [rows] = await db.execute<RowDataPacket[]>(query, [id]);
 
@@ -64,10 +64,10 @@ export class CustomerModel {
         options?: { user?: boolean }
     ): Promise<CustomerModel | null> {
         const db = Database.getInstance();
-        let query = "SELECT * FROM customer WHERE user_id = ?";
+        let query = "SELECT * FROM customers WHERE user_id = ?";
         if (options?.user) {
             query =
-                "SELECT c.*, users.id as user_id, users.name as user_name, users.email as user_email FROM customer c JOIN users ON c.user_id = users.id WHERE c.user_id = ?";
+                "SELECT c.*, users.id as user_id, users.name as user_name, users.email as user_email FROM customers c JOIN users ON c.user_id = users.id WHERE c.user_id = ?";
         }
         const [rows] = await db.execute<RowDataPacket[]>(query, [user_id]);
 
@@ -88,14 +88,14 @@ export class CustomerModel {
 
     static async findAll(): Promise<CustomerModel[]> {
         const db = Database.getInstance();
-        const [rows] = await db.execute<RowDataPacket[]>("SELECT * FROM customer");
+        const [rows] = await db.execute<RowDataPacket[]>("SELECT * FROM customers");
         return rows.map((row) => new CustomerModel(row as CustomerModel));
     }
 
     async update(): Promise<void> {
         const db = Database.getInstance();
         const [result] = await db.execute<ResultSetHeader>(
-            "UPDATE customer SET user_id = ?, address = ?, phone = ? WHERE id = ?",
+            "UPDATE customers SET user_id = ?, address = ?, phone = ? WHERE id = ?",
             [this.user_id, this.address, this.phone, this.id]
         );
         if (result.affectedRows === 0) {
@@ -106,7 +106,7 @@ export class CustomerModel {
     async delete(): Promise<void> {
         const db = Database.getInstance();
         const [result] = await db.execute<ResultSetHeader>(
-            "DELETE FROM customer WHERE id = ?",
+            "DELETE FROM customers WHERE id = ?",
             [this.id]
         );
         if (result.affectedRows === 0) {
